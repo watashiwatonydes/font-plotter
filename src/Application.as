@@ -95,23 +95,6 @@ package
 			
 						if(coords[0] != p.x || coords[1] != p.y) 
 						{
-							
-							// Check distance with the previous point. If the distance is too high, we add points
-							// for higher triangulation resolution
-							var distance:Number = GeometryUtils.Distance(p.x, p.y, coords[0], coords[1]);
-							if (distance > 100)
-							{
-								var ceil:int = Math.ceil(distance/100);
-								var invCeil:Number = 1 / ceil;
-								
-								for ( var j:int = 0 ; j < ceil - 1; j++ )
-								{
-									var f:Number = (j+1) * invCeil;
-									var interpolated:Vector.<Number> = GeometryUtils.Interpolate(p.x, p.y, coords[0], coords[1], f);
-									drawDot(graphics, interpolated[0] - dx, interpolated[1] - dy, 3);
-								}
-							}
-							
 							drawDot(graphics, coords[0] - dx, coords[1] - dy, 1);
 							
 							GeometryUtils.AddPoint( _polylineVector, coords[0] - dx, coords[1] - dy );
