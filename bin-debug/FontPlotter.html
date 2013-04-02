@@ -23,7 +23,7 @@
         <style type="text/css" media="screen"> 
             html, body  { height:100%; }
             body { margin:0; padding:0; overflow:auto; text-align:center; 
-                   background-color: #ffffff; }   
+                   background-color: #111111; }   
             object:focus { outline:none; }
             #flashContent { display:none; }
         </style>
@@ -43,16 +43,16 @@
             var flashvars = {};
             var params = {};
             params.quality = "high";
-            params.bgcolor = "#ffffff";
+            params.bgcolor = "#111111";
             params.allowscriptaccess = "sameDomain";
             params.allowfullscreen = "true";
             var attributes = {};
-            attributes.id = "Application";
-            attributes.name = "Application";
+            attributes.id = "FontPlotter";
+            attributes.name = "FontPlotter";
             attributes.align = "middle";
             swfobject.embedSWF(
-                "Application.swf", "flashContent", 
-                "100%", "100%", 
+                "FontPlotter.swf", "flashContent", 
+                "1200", "100%", 
                 swfVersionStr, xiSwfUrlStr, 
                 flashvars, params, attributes);
             // JavaScript enabled so display the flashContent div in case it is not replaced with a swf object.
@@ -77,16 +77,16 @@
         </div>
         
         <noscript>
-            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%" id="Application">
-                <param name="movie" value="Application.swf" />
+            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="1200" height="100%" id="FontPlotter">
+                <param name="movie" value="FontPlotter.swf" />
                 <param name="quality" value="high" />
-                <param name="bgcolor" value="#ffffff" />
+                <param name="bgcolor" value="#111111" />
                 <param name="allowScriptAccess" value="sameDomain" />
                 <param name="allowFullScreen" value="true" />
                 <!--[if !IE]>-->
-                <object type="application/x-shockwave-flash" data="Application.swf" width="100%" height="100%">
+                <object type="application/x-shockwave-flash" data="FontPlotter.swf" width="1200" height="100%">
                     <param name="quality" value="high" />
-                    <param name="bgcolor" value="#ffffff" />
+                    <param name="bgcolor" value="#111111" />
                     <param name="allowScriptAccess" value="sameDomain" />
                     <param name="allowFullScreen" value="true" />
                 <!--<![endif]-->

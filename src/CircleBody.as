@@ -10,48 +10,49 @@ package
 	
 	import flash.display.Shape;
 	import flash.geom.Point;
-
-	public class VerticeBody extends Shape
+	
+	public class CircleBody extends Shape
 	{
-		
 		private var world:b2World				= null;
 		private var worldScale:int      		= 30;
-		public var pixelBasedPosition:Point    = null;// Initial point provided to initilalize
+		public  var pixelBasedPosition:Point    = null;
 		private var _body:b2Body                = null;
 		private var fixture:b2Fixture           = null;
 		private var bodyType:uint;
 		private const coord:Point				= new Point();
+		private var radius:Number;
 		
-		public function VerticeBody( pixelBasedPosition:Point, world:b2World, worldScale:int, bodyType:uint )
+		public function CircleBody(pixelBasedPosition:Point, world:b2World, worldScale:int, bodyType:uint, radius:Number = 100)
 		{
 			this.pixelBasedPosition = pixelBasedPosition;
 			this.world = world;
 			this.worldScale = worldScale;
 			this.bodyType = bodyType;
+			this.radius = radius;
 			
 			this.init();
 		}
 		
-		private function init():void
+		public function init( ):void
 		{
-			var bodyDef:b2BodyDef                 = new b2BodyDef();
-			bodyDef.position.Set( pixelBasedPosition.x / worldScale, pixelBasedPosition.y / worldScale );
+			var bodyDef             = new b2BodyDef();
+			bodyDef.position.Set( pixelBasedPosition.x / this.worldScale, pixelBasedPosition.y / this.worldScale );
+			bodyDef.type 			= b2Body.b2_dynamicBody;
+			bodyDef.fixedRotation	= false;
+			bodyDef.linearDamping	= .1;
+			bodyDef.angularDamping	= .1;
 			
-			bodyDef.type 			    = bodyType; 
 			
-			bodyDef.linearDamping	    = .1;
-			bodyDef.angularDamping	    = .1;
+			var circleShape:b2CircleShape	= new b2CircleShape( this.radius / this.worldScale );
 			
-			var circularShape:b2CircleShape	= new b2CircleShape( 1 / this.worldScale );
+			var fixtureDef  		= new b2FixtureDef();
+			fixtureDef.shape		= circleShape;
+			fixtureDef.friction		= .1;
+			fixtureDef.density		= 1 * radius;
+			fixtureDef.restitution	= 0.8;
 			
-			var fixtureDef:b2FixtureDef	= new b2FixtureDef();
-			fixtureDef.shape			= circularShape;
-			fixtureDef.friction			= .1;
-			fixtureDef.density			= 10;
-			fixtureDef.restitution		= 1;
-			
-			this.body                    = this.world.CreateBody( bodyDef );
-			this.fixture                 = this.body.CreateFixture( fixtureDef );
+			_body					= this.world.CreateBody( bodyDef );
+			_body.CreateFixture( fixtureDef );
 		}
 		
 		public function  get pixelCoordinates():Point
@@ -74,33 +75,24 @@ package
 		
 		public function draw( scale:Number = 1, color:Number = 0xFF0000 ):void
 		{
-			var radius:Number  = 4 * scale;
-			
+			var r:Number  = radius * scale;
 			
 			graphics.clear();
 			graphics.beginFill( color );
-			graphics.drawCircle(0, 0, radius);
+			graphics.drawCircle(0, 0, r);
 			graphics.endFill();
 		}
-
+		
 		public function get body():b2Body
 		{
 			return _body;
 		}
-
+		
 		public function set body(value:b2Body):void
 		{
 			_body = value;
 		}
-
+		
 		
 	}
 }
-
-
-	
-
-
-
-
-

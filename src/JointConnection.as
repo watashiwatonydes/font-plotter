@@ -29,7 +29,7 @@ package
 		private var dampingRatio:Number;
 		
 		public function JointConnection(jointType:int, bodyA:b2Body, bodyB:b2Body, world:b2World, worldScale:int, 
-										freqHz:Number = 4, dampingRatio:Number = .1)
+										freqHz:Number = 6, dampingRatio:Number = .1)
 		{
 			this.jointType = jointType;
 			this.bodyA = bodyA;
@@ -45,7 +45,6 @@ package
 		
 		private function init():void
 		{
-			
 			
 			switch(jointType)
 			{
