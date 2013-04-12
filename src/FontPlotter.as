@@ -3,8 +3,10 @@ package
 	import Box2D.Collision.Shapes.b2PolygonShape;
 	import Box2D.Common.Math.b2Vec2;
 	import Box2D.Dynamics.Joints.b2MouseJoint;
+	import Box2D.Dynamics.Joints.b2MouseJointDef;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2BodyDef;
+	import Box2D.Dynamics.b2Fixture;
 	import Box2D.Dynamics.b2FixtureDef;
 	import Box2D.Dynamics.b2World;
 	
@@ -16,13 +18,15 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.media.Sound;
 	import flash.net.URLRequest;
 	import flash.utils.Timer;
 	
 
-	[SWF(backgroundColor="0x111111", frameRate="60", width="1200", heightPercent="100")]
+	[SWF(backgroundColor="0x111111", frameRate="50", widthPercent="100", heightPercent="100")]
 	public class FontPlotter extends Sprite
 	{
 		
@@ -61,52 +65,26 @@ package
 		
 		private function init( event:Event = null ):void
 		{
-			var gravity:b2Vec2  = new b2Vec2( 0.0 , 1 );
+			var gravity:b2Vec2  = new b2Vec2( -1.0 , 0.1 );
 			_world 	= new b2World( gravity, true );
 			
 			// _world.SetContactListener( new AppContactListener() );
-			
-			
-			// Floor
-			var bodyDef:b2BodyDef	= new b2BodyDef();
-			bodyDef.position.Set( (stage.stageWidth) / WORLD_SCALE, (stage.stageHeight) / WORLD_SCALE );
-			bodyDef.type 					= b2Body.b2_staticBody;
-			
-			var polygonShape:b2PolygonShape	= new b2PolygonShape();
-			polygonShape.SetAsBox( (2 * stage.stageWidth) / WORLD_SCALE, 1 / WORLD_SCALE );
-			var fixtureDef:b2FixtureDef		= new b2FixtureDef();
-			fixtureDef.shape				= polygonShape;
-			
-			var theFloor:b2Body				= _world.CreateBody( bodyDef );	
-			theFloor.CreateFixture( fixtureDef );
-			
-			// Right
-			var bodyDefR:b2BodyDef	= new b2BodyDef();
-			bodyDefR.position.Set( (stage.stageWidth * 1) / WORLD_SCALE, (stage.stageHeight/2) / WORLD_SCALE );
-			bodyDefR.type 					= b2Body.b2_staticBody;
-			
-			var polygonShapeR:b2PolygonShape	= new b2PolygonShape();
-			polygonShapeR.SetAsBox( 1 / WORLD_SCALE, (stage.stageHeight/2) / WORLD_SCALE );
-			var fixtureDefR:b2FixtureDef		= new b2FixtureDef();
-			fixtureDefR.shape				= polygonShapeR;
-			
-			var theFloorR:b2Body				= _world.CreateBody( bodyDefR );	
-			theFloorR.CreateFixture( fixtureDefR );
 			
 			
 			// Parse the SWF file and extract font informations
 			_swf = new SWF(loaderInfo.bytes);
 			_font = _swf.getCharacter(1) as TagDefineFont3;
 			
-			GOODS = [ 22, 34, 66, 66, 67, 68, 79, 80, 81 ]
+			GOODS = [ 22 ] // Didot
+			// GOODS = [ 22, 34, 35, 66, 68, 79, 81 ] // Didot
+			// GOODS = [ 21 ] // , 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 57, 58 ] // Arial
 			
 			
 			// Creates a Letter 
 			_letters = new  Vector.<Letter>();
 			
 			
-			
-			_timer = new Timer( 13000, 9 );
+			_timer = new Timer( 8000, GOODS.length );
 			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 			_timer.start();
 			
@@ -118,15 +96,13 @@ package
 			{
 				_sound.play(0);
 			} )
-			_sound.load( new URLRequest( "assets/satie.mp3" ) );
+			// _sound.load( new URLRequest( "assets/satie.mp3" ) );
 				
 			
-			/*
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
-			stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
-			*/
+			// stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			// stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
+			// stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+			// stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
 			
 			addEventListener(Event.ENTER_FRAME, update);
 		}
@@ -150,7 +126,9 @@ package
 				
 				addChild( letter );
 				
+				
 				letter.applyImpulse();
+				
 				
 				var oldLetter:Letter = _letters.pop();
 				if ( oldLetter )
@@ -161,6 +139,10 @@ package
 				
 				_letters.push( letter );
 				
+			}
+			else
+			{
+				_letters.length = 0;
 			}
 		}
 		
@@ -174,6 +156,21 @@ package
 			{
 				l.draw();	
 			}
+			
+			
+			if ( _dragVerticeBody )
+			{
+				var position:Point = _dragVerticeBody.pixelCoordinates;
+				_dragVerticeBody.x = position.x;
+				_dragVerticeBody.y = position.y;
+				_dragVerticeBody.draw();
+			}
+			
+			if(_dragJointConnection)
+			{
+				_dragJointConnection.draw();
+			}
+			
 		}
 		
 		
@@ -185,7 +182,6 @@ package
 			return buffer;
 		}
 		
-		/*
 		protected function handleMouseUp(event:MouseEvent):void
 		{
 			if( _mouseJoint )
@@ -215,7 +211,7 @@ package
 		
 		protected function handleMouseMove(event:MouseEvent):void
 		{
-			var mousePos = null;
+			var mousePos:b2Vec2 = null;
 			if( event.buttonDown )
 			{
 				if( _mouseJoint ){
@@ -233,8 +229,9 @@ package
 			var someVerticeBody:VerticeBody = null;
 			var vb:VerticeBody = null;
 			var d:Number = Number.MAX_VALUE;
+			var letter:Letter = _letters[ 0 ];
 			
-			for each(vb in VerticesBodies)
+			for each(vb in letter.verticesBodies)
 			{
 				var dist2Point:Number = Point.distance( vb.pixelCoordinates, mousePosition );
 				if( dist2Point < d )
@@ -247,7 +244,7 @@ package
 			
 			_dragVerticeBody = new VerticeBody( mousePosition, _world, WORLD_SCALE, b2Body.b2_dynamicBody);
 			addChild( _dragVerticeBody );
-			_dragVerticeBody.draw( 30 );
+			_dragVerticeBody.draw( 20 );
 			
 			trace ( _dragVerticeBody );
 			
@@ -288,7 +285,6 @@ package
 				}
 			}
 		}
-		*/
 		
 		
 				

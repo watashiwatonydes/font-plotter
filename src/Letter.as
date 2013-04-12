@@ -100,12 +100,15 @@ package
 		
 		private function processGraphicsPath(gp:GraphicsPath):void
 		{
+			
+			
+			
 			var c:Vector.<int> 		= gp.commands;
 			var d:Vector.<Number> 	= gp.data;
+			
 			var p:Point 			= new Point(0, 0);
 			var bounds:Rectangle 	= getCharacterBounds(d);
-			var scale:Number		= 1;
-			
+			var scale:Number		= .8;
 			
 			
 			var dx:Number 			= bounds.x - 20;
@@ -283,6 +286,8 @@ package
 					_jointConnections.push( jc0, jc1, jc2 );
 				}
 			}
+			
+			
 		}
 		
 		public function draw():void
@@ -291,7 +296,8 @@ package
 			// _drawing.fillRect( _fillRect, 0x00000000 )
 			
 			graphics.clear();
-			graphics.beginFill(0xFFD702, .1);
+			// graphics.lineStyle(1, 0xFFD702, 1);
+			graphics.beginFill(0xFFFFFF, .5);
 			
 			
 			var coords:Point;	
@@ -331,15 +337,26 @@ package
 			graphics.endFill();
 			
 			// _drawing.draw( this );
+			/*
+			for each (var j:JointConnection in _jointConnections)
+			{
+				if ( !this.contains( j ) )
+					addChild( j );
+				
+					j.draw();
+				
+			}
+			*/
 		}
 
 		public function applyImpulse():void
 		{
-			var rx:Number = 8 + Math.random() * 4;
+			var rx:Number = 30;
 			var impulse:b2Vec2 	= new b2Vec2( rx / _worldScale, 0 );
 			var ln:int = int(_verticesBodies.length/3);	
 			var vb:VerticeBody;
 			var center:b2Vec2;
+			
 			
 			
 			for (var i:int = 0 ; i < ln ; i++)
@@ -406,6 +423,17 @@ package
 			}
 			return new Rectangle(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 		}
+
+		public function get verticesBodies():Vector.<VerticeBody>
+		{
+			return _verticesBodies;
+		}
+
+		public function set verticesBodies(value:Vector.<VerticeBody>):void
+		{
+			_verticesBodies = value;
+		}
+
 		
 	}
 }
